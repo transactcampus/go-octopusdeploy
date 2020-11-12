@@ -1,19 +1,19 @@
 # go-octopusdeploy
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy)](https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy) ![Run Integration Tests](https://github.com/OctopusDeploy/go-octopusdeploy/workflows/Run%20Integration%20Tests/badge.svg?branch=beta-candidate-01) [![Go Report](https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy)](https://goreportcard.com/report/github.com/OctopusDeploy/go-octopusdeploy)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/transactcampus/go-octopusdeploy)](https://pkg.go.dev/github.com/transactcampus/go-octopusdeploy) ![Run Integration Tests](https://github.com/transactcampus/go-octopusdeploy/workflows/Run%20Integration%20Tests/badge.svg?branch=beta-candidate-01) [![Go Report](https://goreportcard.com/badge/github.com/transactcampus/go-octopusdeploy)](https://goreportcard.com/report/github.com/transactcampus/go-octopusdeploy)
 
 A Go client for the [Octopus Deploy](https://octopus.com/) API. This client is used by the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
 
 ## Install
 
 ```
-go get "github.com/OctopusDeploy/go-octopusdeploy"
+go get "github.com/transactcampus/go-octopusdeploy"
 ```
 
 ## Usage
 
 ```go
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+import "github.com/transactcampus/go-octopusdeploy/octopusdeploy"
 ```
 
 The [Octopus REST API](https://octopus.com/docs/octopus-rest-api) is exposed through service fields of the client. An API key is required to communicate with the API (see [How to Create an API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) for more information).

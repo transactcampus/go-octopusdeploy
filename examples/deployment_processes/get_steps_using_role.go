@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/transactcampus/go-octopusdeploy/octopusdeploy"
 )
 
 func GetStepsUsingRoleExample() {

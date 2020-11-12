@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/transactcampus/go-octopusdeploy/octopusdeploy"
 )
 
 // ReplaceCertificateExample shows how to replace an existing certificate using go-octopusdeploy.

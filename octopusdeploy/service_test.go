@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
+	"github.com/transactcampus/go-octopusdeploy/uritemplates"
 	"github.com/stretchr/testify/require"
 )
 
