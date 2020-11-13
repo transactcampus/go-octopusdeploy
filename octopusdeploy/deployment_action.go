@@ -14,7 +14,7 @@ type DeploymentAction struct {
 	Properties                    map[string]string  `json:"Properties"` // TODO: refactor to use the PropertyValueResource for handling sensitive values - https://blog.gopheracademy.com/advent-2016/advanced-encoding-decoding/
 	TenantTags                    []string           `json:"TenantTags,omitempty"`
 	WorkerPoolID                  string             `json:"WorkerPoolId,omitempty"`
-	ContainerImage                string             `json:"ContainerImage"`
+	Container                     map[string]string  `json:"Container,omitempty"`
 }
 
 // NewDeploymentAction initializes a DeploymentAction with a name.
