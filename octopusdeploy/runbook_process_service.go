@@ -14,6 +14,25 @@ func newRunbookProcessService(sling *sling.Sling, uriTemplate string) *runbookPr
 	}
 }
 
+// Add returns the runbook that matches the input ID.
+func (s runbookProcessService) Add(runbookProcess *RunbookProcess) (*RunbookProcess, error) {
+	if runbookProcess == nil {
+		return nil, createInvalidParameterError("Add", "runbookProcess")
+	}
+
+	path, err := getAddPath(s, runbookProcess)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), runbookProcess, new(RunbookProcess), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*RunbookProcess), nil
+}
+
 func (s runbookProcessService) getPagedResponse(path string) ([]*RunbookProcess, error) {
 	resources := []*RunbookProcess{}
 	loadNextPage := true
@@ -52,6 +71,25 @@ func (s runbookProcessService) GetByID(id string) (*RunbookProcess, error) {
 	}
 
 	resp, err := apiGet(s.getClient(), new(RunbookProcess), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*RunbookProcess), nil
+}
+
+// Update modifies a runbook based on the one provided as input.
+func (s runbookProcessService) Update(runbookProcess *RunbookProcess) (*RunbookProcess, error) {
+	if runbookProcess == nil {
+		return nil, createInvalidParameterError(OperationUpdate, ParameterRunbookProcess)
+	}
+
+	path, err := getUpdatePath(s, runbookProcess)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiUpdate(s.getClient(), runbookProcess, new(RunbookProcess), path)
 	if err != nil {
 		return nil, err
 	}

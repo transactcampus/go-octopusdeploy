@@ -31,6 +31,7 @@ const (
 	ParameterReplacementCertificate string = "replacementCertificate"
 	ParameterResource               string = "resource"
 	ParameterRunbook                string = "runbook"
+	ParameterRunbookProcess         string = "runbookProcess"
 	ParameterSecretKey              string = "secretKey"
 	ParameterSling                  string = "sling"
 	ParameterTagSet                 string = "tagSet"
