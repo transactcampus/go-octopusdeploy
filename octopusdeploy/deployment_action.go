@@ -22,5 +22,6 @@ type DeploymentAction struct {
 func NewDeploymentAction(name string) *DeploymentAction {
 	return &DeploymentAction{
 		Name: name,
+		Properties: map[string]string{},
 	}
 }
