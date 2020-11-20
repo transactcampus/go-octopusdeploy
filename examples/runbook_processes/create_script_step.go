@@ -1,8 +1,10 @@
-package main
+package examples
 
 import (
 	"fmt"
 	"net/url"
+	"os"
+
 	// "encoding/json"
 
 	"github.com/transactcampus/go-octopusdeploy/octopusdeploy"
@@ -11,13 +13,13 @@ import (
 func main() {
 	var (
 		// Declare working variables
-		octopusURL  string = ""
-		apiKey      string = ""
-		runbookID   string = ""
-		roleName    string = "role-name"
-		scriptBody  string = "Write-Host \"Hello world\""
-		spaceID     string = ""
-		stepName    string = "Run a script"
+		octopusURL string = os.Getenv("OCTOPUS_URL")
+		apiKey     string = os.Getenv("API_KEY")
+		runbookID  string = os.Getenv("RUNBOOK_ID")
+		roleName   string = os.Getenv("ROLE_NAME")
+		scriptBody string = "Write-Host \"Hello world\""
+		spaceID    string = os.Getenv("SPACE_ID")
+		stepName   string = "Run a script"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -38,11 +40,22 @@ func main() {
 	if err != nil {
 		// TODO: handle error
 	}
-	
+
+	/*
+		rb, _ := json.Marshal(runbook)
+		fmt.Printf("%s\n\t", rb)
+		os.Exit(0)
+		//*/
+
 	// Get the deployment process
 	runbookProcess, err := client.RunbookProcesses.GetByID(runbook.RunbookProcessID)
 	// jsonEncoding, err := json.Marshal(runbookProcess)
-	
+
+	/*
+		rb, _ := json.Marshal(runbookProcess)
+		fmt.Printf("%s\n\t", rb)
+		os.Exit(0)
+		//*/
 
 	if err != nil {
 		// TODO: handle error
@@ -52,7 +65,7 @@ func main() {
 	newStep := octopusdeploy.NewDeploymentStep(stepName)
 	newStep.Condition = "Success"
 	newStep.Properties["Octopus.Action.TargetRoles"] = roleName
-	
+
 	// Create new script action
 	stepAction := octopusdeploy.NewDeploymentAction(stepName)
 
@@ -63,8 +76,20 @@ func main() {
 	newStep.Actions = append(newStep.Actions, *stepAction)
 	runbookProcess.Steps = append(runbookProcess.Steps, *newStep)
 
+	/*
+		rb, _ := json.Marshal(runbookProcess)
+		fmt.Printf("%s\n\t", rb)
+		os.Exit(0)
+		//*/
+
 	// Update process
-	_, err = client.RunbookProcesses.Update(*runbookProcess)
+	rbpr, err := client.RunbookProcesses.Update(*runbookProcess)
+
+	/*
+		rb, _ := json.Marshal(rbpr)
+		fmt.Printf("%s\n\t", rb)
+		os.Exit(0)
+		//*/
 
 	if err != nil {
 		// TODO: handle error
