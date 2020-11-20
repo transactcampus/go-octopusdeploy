@@ -53,7 +53,7 @@ const (
 	ServiceReleaseService                       string = "ReleaseService"
 	ServiceReportingService                     string = "ReportingService"
 	ServiceRootService                          string = "RootService"
-	ServiceRunbookProcessService                string = "RunbookProcessService"
+	ServiceRunbookProcessesService              string = "RunbookProcessesService"
 	ServiceRunbookRunService                    string = "RunbookRunService"
 	ServiceRunbookSnapshotService               string = "RunbookSnapshotService"
 	ServiceRunbookService                       string = "RunbookService"

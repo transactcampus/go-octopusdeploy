@@ -8,15 +8,17 @@ type Environments struct {
 }
 
 type Environment struct {
-	AllowDynamicInfrastructure bool   `json:"AllowDynamicInfrastructure"`
-	Description                string `json:"Description,omitempty"`
-	Name                       string `json:"Name" validate:"required"`
-	SortOrder                  int    `json:"SortOrder"`
-	UseGuidedFailure           bool   `json:"UseGuidedFailure"`
+	AllowDynamicInfrastructure bool                `json:"AllowDynamicInfrastructure"`
+	Description                string              `json:"Description,omitempty"`
+	Name                       string              `json:"Name" validate:"required"`
+	SortOrder                  int                 `json:"SortOrder"`
+	UseGuidedFailure           bool                `json:"UseGuidedFailure"`
+	ExtensionSettings          []ExtensionSettings `json:"ExtensionSettings,omitempty"`
 
 	resource
 }
 
+// NewEnvironment initializes an Environment with a name.
 func NewEnvironment(name string) *Environment {
 	return &Environment{
 		AllowDynamicInfrastructure: false,
