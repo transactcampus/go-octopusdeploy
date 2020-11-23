@@ -18,7 +18,7 @@ func UpdateEnvironmentExtensionSettingsExample() {
 		environmentID string = os.Getenv("ENVRIONMENT_ID")
 		extensionID   string = os.Getenv("EXTENSION_ID")
 		valueKey      string = "JiraEnvironmentType"
-		valueValue    string = "staging"
+		valueValue    string = "development"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -47,7 +47,7 @@ func UpdateEnvironmentExtensionSettingsExample() {
 
 	for _, extensionSetting := range environment.ExtensionSettings {
 		if extensionSetting.ExtensionID == extensionID {
-			extensionSetting.Values[valueKey] = valueValue
+			extensionSetting.Values = map[string]string{valueKey: valueValue}
 		}
 	}
 

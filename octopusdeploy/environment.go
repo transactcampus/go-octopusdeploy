@@ -8,12 +8,12 @@ type Environments struct {
 }
 
 type Environment struct {
-	AllowDynamicInfrastructure bool                `json:"AllowDynamicInfrastructure"`
-	Description                string              `json:"Description,omitempty"`
-	Name                       string              `json:"Name" validate:"required"`
-	SortOrder                  int                 `json:"SortOrder"`
-	UseGuidedFailure           bool                `json:"UseGuidedFailure"`
-	ExtensionSettings          []ExtensionSettings `json:"ExtensionSettings,omitempty"`
+	AllowDynamicInfrastructure bool                       `json:"AllowDynamicInfrastructure"`
+	Description                string                     `json:"Description,omitempty"`
+	Name                       string                     `json:"Name" validate:"required"`
+	SortOrder                  int                        `json:"SortOrder"`
+	UseGuidedFailure           bool                       `json:"UseGuidedFailure"`
+	ExtensionSettings          []*ExtensionSettingsValues `json:"ExtensionSettings,omitempty"`
 
 	resource
 }
