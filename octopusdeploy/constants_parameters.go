@@ -39,6 +39,7 @@ const (
 	ParameterToken                  string = "token"
 	ParameterUser                   string = "user"
 	ParameterUserID                 string = "userID"
+	ParameterUserRole               string = "userRole"
 	ParameterUsername               string = "username"
 	ParameterWorker                 string = "worker"
 	ParameterWorkerPool             string = "workerPool"

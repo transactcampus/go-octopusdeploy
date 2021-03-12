@@ -12,15 +12,15 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	switch endpointResource.CommunicationStyle {
 	case "AzureCloudService":
 	case "AzureServiceFabricCluster":
-		endpoint = NewServiceFabricEndpoint()
+		endpoint = NewAzureServiceFabricEndpoint()
 	case "AzureWebApp":
 		endpoint = NewAzureWebAppEndpoint()
 	case "Kubernetes":
-		endpoint = NewKubernetesEndpoint(*endpointResource.ClusterURL)
+		endpoint = NewKubernetesEndpoint(endpointResource.ClusterURL)
 	case "None":
 		endpoint = NewCloudRegionEndpoint()
 	case "OfflineDrop":
-		endpoint = NewOfflineDropEndpoint()
+		endpoint = NewOfflinePackageDropEndpoint()
 	case "Ssh":
 		endpoint = NewSSHEndpoint(endpointResource.Host, endpointResource.Port, endpointResource.Fingerprint)
 	case "TentacleActive":

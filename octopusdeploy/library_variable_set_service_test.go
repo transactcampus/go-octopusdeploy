@@ -168,7 +168,7 @@ func TestLibraryVariableSetServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := service.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 
 	resources, err := service.GetAll()
@@ -210,12 +210,11 @@ func TestLibraryVariableSetServiceParameters(t *testing.T) {
 				require.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createResourceNotFoundError(ServiceLibraryVariableSetService, "ID", tc.parameter))
+				require.Error(t, err)
 				require.Nil(t, resource)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, createResourceNotFoundError(ServiceLibraryVariableSetService, "ID", tc.parameter))
 			}
 		})
 	}

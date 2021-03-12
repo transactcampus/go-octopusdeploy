@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestKubernetesEndpoint(t *testing.T) *KubernetesEndpoint {
-	authentication := &EndpointAuthentication{}
+func CreateTestKubernetesAwsEndpoint(t *testing.T) *KubernetesEndpoint {
+	authentication := NewKubernetesAwsAuthentication()
 	clusterCertificate := ""
 	defaultWorkerPoolID := "default-worker-pool-id"
 	lastModifiedBy := "john.smith@example.com"
@@ -25,12 +25,12 @@ func CreateTestKubernetesEndpoint(t *testing.T) *KubernetesEndpoint {
 	proxyID := "proxy-id"
 	url, _ := url.Parse("https://example.com/")
 
-	kubernetesEndpoint := NewKubernetesEndpoint(*url)
+	kubernetesEndpoint := NewKubernetesEndpoint(url)
 	require.NoError(t, kubernetesEndpoint.Validate())
 
 	kubernetesEndpoint.DefaultWorkerPoolID = defaultWorkerPoolID
 	kubernetesEndpoint.ClusterCertificate = clusterCertificate
-	kubernetesEndpoint.Authentication = *authentication
+	kubernetesEndpoint.Authentication = authentication
 	kubernetesEndpoint.ID = id
 	kubernetesEndpoint.ModifiedBy = lastModifiedBy
 	kubernetesEndpoint.ModifiedOn = &lastModifiedOn
@@ -47,12 +47,16 @@ func TestKubernetesEndpointNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, url)
 
-	resource := NewKubernetesEndpoint(*url)
+	resource := NewKubernetesEndpoint(url)
 	assert.NoError(t, resource.Validate())
 }
 
 func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	feedID := "feed-id"
+
+	kubernetesCertificateAuthentication := NewKubernetesStandardAuthentication("")
+	kubernetesCertificateAuthentication.AccountID = "Accounts-392"
+
 	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
 	links := map[string]string{
 		"Self": "/api/foo/bar/quux",
@@ -61,9 +65,10 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	id := "endpoint-id"
 	url, _ := url.Parse("https://example.com/")
 
-	resource := NewKubernetesEndpoint(*url)
+	resource := NewKubernetesEndpoint(url)
+	resource.Authentication = kubernetesCertificateAuthentication
 	resource.ClusterCertificate = "cluster-certificate"
-	resource.Container.FeedID = &feedID
+	resource.Container.FeedID = feedID
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
 	resource.ID = id
 	resource.ModifiedBy = "john.smith@example.com"
@@ -82,7 +87,10 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	actual := string(jsonEncoding)
 
 	expected := `{
-		"Authentication": {},
+		"Authentication": {
+			"AccountId": "Accounts-392",
+			"AuthenticationType": "KubernetesStandard"
+		},
 		"ClusterCertificate": "cluster-certificate",
 		"ClusterUrl": "https://example.com/",
 		"CommunicationStyle": "Kubernetes",
@@ -124,13 +132,13 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 	require.NotNil(t, resource.Container)
 
 	// Authentication field
-	assert.Equal(t, "Accounts-392", resource.Authentication.AccountID)
-	assert.Equal(t, "KubernetesStandard", resource.Authentication.AuthenticationType)
-	assert.Equal(t, "client-certificate", resource.Authentication.ClientCertificate)
+	kubernetesCertificateAuthentication := resource.Authentication.(*KubernetesCertificateAuthentication)
+	assert.Equal(t, "KubernetesCertificate", kubernetesCertificateAuthentication.GetAuthenticationType())
+	assert.Equal(t, "client-certificate", kubernetesCertificateAuthentication.ClientCertificate)
 
 	// Container field
-	assert.Equal(t, "image", *resource.Container.Image)
-	assert.Equal(t, "feed-id", *resource.Container.FeedID)
+	assert.Equal(t, "image", resource.Container.Image)
+	assert.Equal(t, "feed-id", resource.Container.FeedID)
 
 	// basic fields
 	assert.Equal(t, "Certificates-22-r-BY2FT", resource.ClusterCertificate)
@@ -150,8 +158,7 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 
 const kubernetesEndpointAsJSON string = `{
 	"Authentication": {
-		"AccountId": "Accounts-392",
-		"AuthenticationType": "KubernetesStandard",
+		"AuthenticationType": "KubernetesCertificate",
 		"ClientCertificate": "client-certificate"
 	},
 	"ClusterCertificate": "Certificates-22-r-BY2FT",

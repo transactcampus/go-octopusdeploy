@@ -35,11 +35,11 @@ func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.Client, envi
 	environmentIDs := []string{environment.GetID()}
 	roles := []string{"Prod"}
 
-	endpoint := octopusdeploy.NewOfflineDropEndpoint()
+	endpoint := octopusdeploy.NewOfflinePackageDropEndpoint()
 	require.NotNil(t, endpoint)
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
-	endpoint.OctopusWorkingDirectory = "C:\\Octopus"
+	endpoint.WorkingDirectory = "C:\\Octopus"
 
 	deploymentTarget := octopusdeploy.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
 	deploymentTarget.IsDisabled = true
@@ -120,7 +120,7 @@ func TestMachineServiceAddGetDelete(t *testing.T) {
 
 	id := getRandomName()
 	err := client.Machines.DeleteByID(id)
-	assert.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceMachineService, "ID", id), err)
+	require.Error(t, err)
 
 	environment := CreateTestEnvironment(t, client)
 	require.NotNil(t, environment)
@@ -178,13 +178,26 @@ func TestMachineServiceGetAll(t *testing.T) {
 	}
 }
 
+func TestMachineServiceGetQuery(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	query := octopusdeploy.MachinesQuery{
+		CommunicationStyles: []string{"Kubernetes"},
+	}
+
+	resources, err := client.Machines.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
+}
+
 func TestMachineServiceGetByID(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
 	id := getRandomName()
 	deploymentTarget, err := client.Machines.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceMachineService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, deploymentTarget)
 
 	environment := CreateTestEnvironment(t, client)
@@ -220,11 +233,11 @@ func TestMachineServiceUpdate(t *testing.T) {
 
 	deploymentTarget.Name = getRandomName()
 
-	endpoint, ok := deploymentTarget.Endpoint.(octopusdeploy.OfflineDropEndpoint)
+	endpoint, ok := deploymentTarget.Endpoint.(*octopusdeploy.OfflinePackageDropEndpoint)
 	require.True(t, ok)
 
 	endpoint.ApplicationsDirectory = getRandomName()
-	endpoint.OctopusWorkingDirectory = getRandomName()
+	endpoint.WorkingDirectory = getRandomName()
 	deploymentTarget.Endpoint = endpoint
 
 	updatedDeploymentTarget, err := client.Machines.Update(deploymentTarget)

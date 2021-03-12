@@ -16,6 +16,13 @@ type IAccount interface {
 	IResource
 }
 
+type IDeploymentTarget interface {
+	GetEndpoint() IEndpoint
+	GetName() string
+	GetHealthStatus() string
+	GetIsDisabled() bool
+}
+
 type IDynamicWorkerPool interface {
 	GetWorkerType() WorkerType
 
@@ -25,6 +32,8 @@ type IDynamicWorkerPool interface {
 // IEndpoint defines the interface for all endpoints.
 type IEndpoint interface {
 	GetCommunicationStyle() string
+
+	IResource
 }
 
 type IEndpointWithAccount interface {
@@ -60,6 +69,10 @@ type IHasName interface {
 type IHasSpace interface {
 	GetSpaceID() string
 	SetSpaceID(string)
+}
+
+type IKubernetesAuthentication interface {
+	GetAuthenticationType() string
 }
 
 // IResource defines the interface for all resources.

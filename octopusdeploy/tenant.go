@@ -18,12 +18,12 @@ type Tenant struct {
 	resource
 }
 
-// NewTenant initializes a Tenant with a name and a description.
-func NewTenant(name string, description string) *Tenant {
+// NewTenant initializes a Tenant with a name.
+func NewTenant(name string) *Tenant {
 	return &Tenant{
-		Description: description,
-		Name:        name,
-		resource:    *newResource(),
+		Name:                name,
+		ProjectEnvironments: map[string][]string{},
+		resource:            *newResource(),
 	}
 }
 

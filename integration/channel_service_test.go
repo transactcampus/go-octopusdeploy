@@ -40,9 +40,8 @@ func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octo
 	require.NotNil(t, client)
 
 	name := getRandomName()
-	description := "Description for " + name + " (OK to Delete)"
 
-	channel := octopusdeploy.NewChannel(name, description, project.GetID())
+	channel := octopusdeploy.NewChannel(name, project.GetID())
 	require.NotNil(t, channel)
 	require.NoError(t, channel.Validate())
 
@@ -200,23 +199,25 @@ func TestChannelServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	channel, err := client.Channels.GetByID(id)
-	assert.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceChannelService, "ID", id), err)
+	assert.NotNil(t, err)
 	assert.Nil(t, channel)
+
+	apiError := err.(*octopusdeploy.APIError)
+	assert.Equal(t, 404, apiError.StatusCode)
 
 	channels, err := client.Channels.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, channels)
 
 	for _, channel := range channels {
-		name := channel.Name
 		query := octopusdeploy.ChannelsQuery{
-			PartialName: name,
-			Take:        1,
+			IDs:  []string{channel.GetID()},
+			Take: 1,
 		}
-		namedChannels, err := client.Channels.Get(query)
+		channelsToVerify, err := client.Channels.Get(query)
 		require.NoError(t, err)
-		require.NotNil(t, namedChannels)
-		AssertEqualChannels(t, channel, namedChannels.Items[0])
+		require.NotNil(t, channelsToVerify)
+		AssertEqualChannels(t, channel, channelsToVerify.Items[0])
 
 		channelToCompare, err := client.Channels.GetByID(channel.GetID())
 		assert.NoError(t, err)

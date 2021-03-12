@@ -7,6 +7,8 @@ import (
 	"github.com/transactcampus/go-octopusdeploy/octopusdeploy"
 )
 
+// GetSpaceByIDExample provides an example of how to get a space from Octopus
+// Deploy by its ID through the Go API client.
 func GetSpaceByIDExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

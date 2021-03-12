@@ -10,7 +10,8 @@ import (
 	"github.com/transactcampus/go-octopusdeploy/octopusdeploy"
 )
 
-// ReplaceCertificateExample shows how to replace an existing certificate using go-octopusdeploy.
+// ReplaceCertificateExample provides an example of how to replace an existing
+// certificate in Octopus Deploy through the Go API client.
 func ReplaceCertificateExample() {
 	var (
 		apiKey          string = "API-YOUR_API_KEY"
@@ -36,7 +37,8 @@ func ReplaceCertificateExample() {
 	// get certificates
 	certificateList, err := client.Certificates.GetByPartialName(certificateName)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error getting certificate: %v", err)
+		return
 	}
 
 	// find the certificate with a specific name
@@ -44,12 +46,14 @@ func ReplaceCertificateExample() {
 
 	file, err := os.Open(pfxFilePath)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error opening file path: %v", err)
+		return
 	}
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error reading file: %v", err)
+		return
 	}
 
 	// Convert file to base64
@@ -59,6 +63,7 @@ func ReplaceCertificateExample() {
 	replacementCertificate := octopusdeploy.NewReplacementCertificate(base64Certificate, pfxFilePassword)
 	_, err = client.Certificates.Replace(certificate.GetID(), replacementCertificate)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error replacing certificate: %v", err)
+		return
 	}
 }
