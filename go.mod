@@ -1,4 +1,4 @@
-module github.com/OctopusDeploy/go-octopusdeploy
+module github.com/transactcampus/go-octopusdeploy
 
 go 1.15
 

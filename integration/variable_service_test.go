@@ -3,9 +3,9 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/transactcampus/go-octopusdeploy/octopusdeploy"
 )
 
 func getTestVariable(name string) *octopusdeploy.Variable {
