@@ -38,11 +38,51 @@ func TestNewVariableService(t *testing.T) {
 func TestVariableServiceGetAllWithEmptyID(t *testing.T) {
 	service := newVariableService(nil, TestURIVariables, TestURIVariableNames, TestURIVariablePreview)
 
-	resource, err := service.GetAll(emptyString)
+	variableSet, err := service.GetAll(emptyString)
 	require.Error(t, err)
-	require.Nil(t, resource)
+	require.Len(t, variableSet.Variables, 0)
 
-	resource, err = service.GetAll(whitespaceString)
+	variableSet, err = service.GetAll(whitespaceString)
 	require.Error(t, err)
-	require.Nil(t, resource)
+	require.Len(t, variableSet.Variables, 0)
+}
+
+func TestVariableServiceGetByIDWithEmptyID(t *testing.T) {
+	service := newVariableService(nil, TestURIVariables, TestURIVariableNames, TestURIVariablePreview)
+
+	variable, err := service.GetByID(emptyString, emptyString)
+	require.Error(t, err)
+	require.Nil(t, variable)
+
+	variable, err = service.GetByID(whitespaceString, emptyString)
+	require.Error(t, err)
+	require.Nil(t, variable)
+
+	variable, err = service.GetByID(emptyString, whitespaceString)
+	require.Error(t, err)
+	require.Nil(t, variable)
+
+	variable, err = service.GetByID(whitespaceString, whitespaceString)
+	require.Error(t, err)
+	require.Nil(t, variable)
+}
+
+func TestVariableServiceDeleteSingleWithEmptyID(t *testing.T) {
+	service := newVariableService(nil, TestURIVariables, TestURIVariableNames, TestURIVariablePreview)
+
+	variableSet, err := service.DeleteSingle(emptyString, emptyString)
+	require.Error(t, err)
+	require.NotNil(t, variableSet)
+
+	variableSet, err = service.DeleteSingle(whitespaceString, emptyString)
+	require.Error(t, err)
+	require.NotNil(t, variableSet)
+
+	variableSet, err = service.DeleteSingle(emptyString, whitespaceString)
+	require.Error(t, err)
+	require.NotNil(t, variableSet)
+
+	variableSet, err = service.DeleteSingle(whitespaceString, whitespaceString)
+	require.Error(t, err)
+	require.NotNil(t, variableSet)
 }

@@ -32,6 +32,7 @@ const (
 	ParameterResource               string = "resource"
 	ParameterRunbook                string = "runbook"
 	ParameterRunbookProcess         string = "runbookProcess"
+	ParameterScopedUserRole         string = "scopedUserRole"
 	ParameterSecretKey              string = "secretKey"
 	ParameterSling                  string = "sling"
 	ParameterTagSet                 string = "tagSet"

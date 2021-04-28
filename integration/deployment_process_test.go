@@ -8,6 +8,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func GetTestDeploymentProcess(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) *octopusdeploy.DeploymentProcess {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
+	require.NotNil(t, deploymentProcess)
+	require.NoError(t, err)
+	require.Equal(t, project.DeploymentProcessID, deploymentProcess.GetID())
+
+	return deploymentProcess
+}
+
 func TestDeploymentProcessGet(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
@@ -24,15 +38,18 @@ func TestDeploymentProcessGet(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
-
-	assert.Equal(t, project.DeploymentProcessID, deploymentProcess.GetID())
-	assert.NoError(t, err, "there should be error raised getting a projects deployment process")
+	deploymentProcess := GetTestDeploymentProcess(t, client, project)
+	require.NotNil(t, deploymentProcess)
 }
 
 func TestDeploymentProcessGetAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
+
+	deploymentProcesses, err := client.DeploymentProcesses.GetAll()
+	require.NoError(t, err)
+
+	numberOfDeploymentProcesses := len(deploymentProcesses)
 
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
@@ -46,19 +63,10 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	allDeploymentProcess, err := client.DeploymentProcesses.GetAll()
+	totalDeploymentProcesses, err := client.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
 
-	numberOfDeploymentProcesses := len(allDeploymentProcess)
-
-	additionalProject := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NotNil(t, additionalProject)
-	defer DeleteTestProject(t, client, additionalProject)
-
-	allDeploymentProcessAfterCreatingAdditional, err := client.DeploymentProcesses.GetAll()
-	require.NoError(t, err)
-
-	assert.Equal(t, len(allDeploymentProcessAfterCreatingAdditional), numberOfDeploymentProcesses+1, "created an additional project and expected number of deployment processes to increase by 1")
+	assert.Equal(t, len(totalDeploymentProcesses), numberOfDeploymentProcesses+1, "created an additional project and expected number of deployment processes to increase by 1")
 }
 
 func TestDeploymentProcessUpdate(t *testing.T) {
@@ -77,46 +85,35 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
-	require.NoError(t, err)
+	deploymentProcess := GetTestDeploymentProcess(t, client, project)
 	require.NotNil(t, deploymentProcess)
 
-	deploymentActionWindowService := &octopusdeploy.DeploymentAction{
-		Name:       "Install Windows Service",
-		ActionType: "Octopus.WindowService",
-		Properties: map[string]string{
-			"Octopus.Action.WindowService.CreateOrUpdateService":                        "True",
-			"Octopus.Action.WindowService.ServiceAccount":                               "LocalSystem",
-			"Octopus.Action.WindowService.StartMode":                                    "auto",
-			"Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles":   "True",
-			"Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings": "True",
-			"Octopus.Action.EnabledFeatures":                                            "Octopus.Features.WindowService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles",
-			"Octopus.Action.Package.FeedId":                                             "feeds-nugetfeed",
-			"Octopus.Action.Package.DownloadOnTentacle":                                 "False",
-			"Octopus.Action.Package.PackageId":                                          "Newtonsoft.Json",
-			"Octopus.Action.WindowService.ServiceName":                                  "My service name",
-			"Octopus.Action.WindowService.DisplayName":                                  "my display name",
-			"Octopus.Action.WindowService.Description":                                  "my desc",
-			"Octopus.Action.WindowService.ExecutablePath":                               "bin\\Myservice.exe",
-			"Octopus.Action.SubstituteInFiles.Enabled":                                  "True",
-			"Octopus.Action.SubstituteInFiles.TargetFiles":                              "*.sh",
-		},
-	}
+	deploymentActionWindowService := octopusdeploy.NewDeploymentAction("Install Windows Service", "Octopus.WindowService")
+	deploymentActionWindowService.Properties["Octopus.Action.EnabledFeatures"] = octopusdeploy.NewPropertyValue("Octopus.Features.WindowService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.FeedId"] = octopusdeploy.NewPropertyValue("feeds-nugetfeed", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.DownloadOnTentacle"] = octopusdeploy.NewPropertyValue("False", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.PackageId"] = octopusdeploy.NewPropertyValue("Newtonsoft.Json", false)
+	deploymentActionWindowService.Properties["Octopus.Action.SubstituteInFiles.Enabled"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.CreateOrUpdateService"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.DisplayName"] = octopusdeploy.NewPropertyValue("my display name", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.Description"] = octopusdeploy.NewPropertyValue("my desc", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.ExecutablePath"] = octopusdeploy.NewPropertyValue("bin\\Myservice.exe", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.ServiceAccount"] = octopusdeploy.NewPropertyValue("LocalSystem", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.ServiceName"] = octopusdeploy.NewPropertyValue("My service name", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.StartMode"] = octopusdeploy.NewPropertyValue("auto", false)
+	deploymentActionWindowService.Properties["Octopus.Action.SubstituteInFiles.TargetFiles"] = octopusdeploy.NewPropertyValue("*.sh", false)
+	deploymentActionWindowService.Properties["test"] = octopusdeploy.NewPropertyValue("foo", true)
 
-	step1 := &octopusdeploy.DeploymentStep{
-		Name: "My First Step",
-		Properties: map[string]string{
-			"Octopus.Action.TargetRoles": "octopus-server",
-		},
-	}
+	deploymentStep := octopusdeploy.NewDeploymentStep(getRandomName())
+	deploymentStep.Actions = append(deploymentStep.Actions, *deploymentActionWindowService)
+	deploymentStep.Properties["Octopus.Action.TargetRoles"] = octopusdeploy.NewPropertyValue("octopus-server", false)
 
-	step1.Actions = append(step1.Actions, *deploymentActionWindowService)
+	deploymentProcess.Steps = append(deploymentProcess.Steps, *deploymentStep)
 
-	deploymentProcess.Steps = append(deploymentProcess.Steps, *step1)
-
-	updated, err := client.DeploymentProcesses.Update(deploymentProcess)
-
-	assert.NoError(t, err, "error when updating deployment process")
-	assert.Equal(t, updated.Steps[0].Properties, deploymentProcess.Steps[0].Properties)
-	assert.Equal(t, updated.Steps[0].Actions[0].ActionType, deploymentProcess.Steps[0].Actions[0].ActionType)
+	updatedDeploymentProcess, err := client.DeploymentProcesses.Update(deploymentProcess)
+	require.NoError(t, err)
+	require.Equal(t, updatedDeploymentProcess.Steps[0].Properties, deploymentProcess.Steps[0].Properties)
+	require.Equal(t, updatedDeploymentProcess.Steps[0].Actions[0].ActionType, deploymentProcess.Steps[0].Actions[0].ActionType)
 }
